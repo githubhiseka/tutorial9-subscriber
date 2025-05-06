@@ -17,3 +17,11 @@ The string guest:guest@localhost:5672 is a URI used to connect an application to
 ![slow_chart](slow_chart.jpeg)
 
 In my screenshot, there are around 50 queued messages. I estimate this happened because I ran the publisher code 12 times, which resulted in 12 × 5 = 60 messages. The first 10 messages could be processed directly by the subscriber, but the remaining 50 had to be queued because there's a part in the subscriber code that causes the thread to sleep. As a result, each process must wait for the sleep to finish before it can proceed. Since the messages piled up, they were stored in the queue while waiting for the subscriber to be ready to process them.
+
+### Screenshot of simulation with three subscribers
+
+![three_subscribers](three_subscribers.jpeg)
+
+In this example, I ran the publisher code the same 12 times. Here, there were only around 30 queued messages at most. This is because event processing is handled separately, with each subscriber picking up and processing one message at a time. As a result, more messages can be processed simultaneously, even by different subscribers, leading to fewer messages needing to be queued.
+
+In both the subscriber and publisher code, one possible improvement is to implement parallelism on the publisher side, allowing multiple requests to be sent simultaneously. This would help simulate a more accurate high-traffic scenario, similar to how the SIAK-NG system behaves during a "Siak WAR" situation.
